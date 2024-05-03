@@ -1,9 +1,9 @@
-output "vpc_id" {
-  description = "VPC id of module"
-  value = aws_vpc.main.id
+output "vpc" {
+  description = "VPC outputs"
+  value = module.vpc
 }
 
-output "subnets_ids" {
-  description = "Subnets ids of module"
-  value = aws_subnet.main[*].id
+output "s3" {
+  description = "S3 outputs"
+  value = module.s3
 }

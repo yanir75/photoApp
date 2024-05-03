@@ -36,6 +36,7 @@ func init() {
 		processError(err)
 	}
 	fmt.Println("Loaded successfully")
+
 }
 
 func uploadFileToS3(fileName string, fileContent []byte, description string) (string, error) {
@@ -54,13 +55,12 @@ func uploadFileToS3(fileName string, fileContent []byte, description string) (st
 	svc := s3.New(sess)
 
 	bucket := conf.BucketName
-
 	// This uploads the contents of the buffer to S3
 	_, err = svc.PutObject(&s3.PutObjectInput{
 		Bucket:  aws.String(bucket),
 		Key:     aws.String(fileName),
 		Body:    bytes.NewReader(fileContent),
-		Tagging: aws.String("Description:" + description),
+		Tagging: aws.String("Description=" + description),
 	})
 	if err != nil {
 		fmt.Println("Error uploading file:", err)
