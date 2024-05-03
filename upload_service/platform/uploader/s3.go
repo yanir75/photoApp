@@ -10,6 +10,7 @@ import(
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/go-yaml/yaml"
+	"github.com/gin-gonic/gin"
 
 )
 type Config struct {
@@ -125,4 +126,8 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	if !errors {
 		fmt.Fprint(w, msg)
 	}
+}
+
+func Handler(ctx *gin.Context) {
+	uploadFile(ctx.Writer,ctx.Request)
 }

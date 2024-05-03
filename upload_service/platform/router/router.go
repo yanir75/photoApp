@@ -9,12 +9,14 @@ import (
 
 	"update_service/platform/authenticator"
 	"update_service/platform/middleware"
-	// "update_service/platform/uploader"
+	"update_service/platform/uploader"
 	"update_service/web/app/callback"
 	"update_service/web/app/home"
 	"update_service/web/app/login"
 	"update_service/web/app/logout"
 	"update_service/web/app/user"
+	"update_service/web/app/upload"
+
 )
 
 // New registers the routes and returns the router.
@@ -36,6 +38,9 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/user", middleware.IsAuthenticated, user.Handler)
 	router.GET("/logout", logout.Handler)
+	router.GET("/upload",middleware.IsAuthenticated, upload.Handler)
+	router.POST("/upload",middleware.IsAuthenticated, uploader.Handler)
+
 	// router.POST("/upload",uploader.uploadFile)
 
 	return router
