@@ -25,9 +25,9 @@ func setupRoutes() {
 
 	rtr := router.New(auth)
 
-	log.Print("Server listening on http://localhost:3000/")
+	log.Print("Server listening on http://localhost:8080/")
 	
-	http.ListenAndServe(":3000", rtr)
+	http.ListenAndServe(":8080", rtr)
 }
 
 func main() {

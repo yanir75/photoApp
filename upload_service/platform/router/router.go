@@ -33,13 +33,13 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.Static("/public", "web/static")
 	router.LoadHTMLGlob("web/template/*")
 
-	router.GET("/", home.Handler)
+	router.GET("/",middleware.HomePageDecider, home.Handler)
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
-	router.GET("/user", middleware.IsAuthenticated, user.Handler)
+	router.GET("/user", middleware.AuthenticatedRedirect, user.Handler)
 	router.GET("/logout", logout.Handler)
-	router.GET("/upload",middleware.IsAuthenticated, upload.Handler)
-	router.POST("/upload",middleware.IsAuthenticated, uploader.Handler)
+	router.GET("/upload",middleware.AuthenticatedRedirect, upload.Handler)
+	router.POST("/upload",middleware.AuthenticatedRedirect, uploader.Handler)
 
 	// router.POST("/upload",uploader.uploadFile)
 
