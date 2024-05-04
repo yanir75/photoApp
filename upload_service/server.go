@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"log"
 	"github.com/joho/godotenv"
-
+	"log"
+	"net/http"
 
 	"update_service/platform/authenticator"
 	"update_service/platform/router"
-
 )
 
 func setupRoutes() {
@@ -26,7 +24,7 @@ func setupRoutes() {
 	rtr := router.New(auth)
 
 	log.Print("Server listening on http://localhost:8080/")
-	
+
 	http.ListenAndServe(":8080", rtr)
 }
 
