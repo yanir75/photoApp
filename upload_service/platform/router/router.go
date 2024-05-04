@@ -14,9 +14,8 @@ import (
 	"update_service/web/app/home"
 	"update_service/web/app/login"
 	"update_service/web/app/logout"
-	"update_service/web/app/user"
 	"update_service/web/app/upload"
-
+	"update_service/web/app/user"
 )
 
 // New registers the routes and returns the router.
@@ -33,13 +32,13 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.Static("/public", "web/static")
 	router.LoadHTMLGlob("web/template/*")
 
-	router.GET("/",middleware.HomePageDecider, home.Handler)
+	router.GET("/", middleware.HomePageDecider, home.Handler)
 	router.GET("/login", login.Handler(auth))
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/user", middleware.AuthenticatedRedirect, user.Handler)
 	router.GET("/logout", logout.Handler)
-	router.GET("/upload",middleware.AuthenticatedRedirect,middleware.PermissionsChecker, upload.Handler)
-	router.POST("/upload",middleware.AuthenticatedRedirect,middleware.PermissionsChecker, uploader.Handler)
+	router.GET("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsChecker, upload.Handler)
+	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsChecker, uploader.Handler)
 
 	// router.POST("/upload",uploader.uploadFile)
 

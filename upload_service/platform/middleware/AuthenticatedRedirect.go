@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	
+
 	"update_service/platform/authenticator"
 
 	"github.com/gin-gonic/gin"
@@ -17,5 +17,3 @@ func AuthenticatedRedirect(ctx *gin.Context) {
 		ctx.Next()
 	}
 }
-
-

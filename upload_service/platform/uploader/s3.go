@@ -1,18 +1,19 @@
 package uploader
-import(
+
+import (
 	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/go-yaml/yaml"
 	"github.com/gin-gonic/gin"
-
+	"github.com/go-yaml/yaml"
 )
+
 type Config struct {
 	Region     string `yaml:"Region"`
 	BucketName string `yaml:"BucketName"`
@@ -129,5 +130,5 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func Handler(ctx *gin.Context) {
-	uploadFile(ctx.Writer,ctx.Request)
+	uploadFile(ctx.Writer, ctx.Request)
 }
