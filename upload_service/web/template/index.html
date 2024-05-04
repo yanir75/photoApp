@@ -8,9 +8,9 @@
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
-const myParam = urlParams.get('msg');
-if (myParam !== null ){
-   alert(myParam);
+myParam = urlParams.get('msg');
+if (myParam !== null){
+   alert(myParam.replace(/\\n/g,"\n"));
 }
 </script>
 
@@ -291,7 +291,7 @@ if (myParam !== null ){
                <label for="images" class="drop-container" id="dropcontainer">
                   <span class="drop-title">Drop files here</span>
                   or
-                  <input type="file" id="images" name="myFile" required>
+                  <input type="file" id="images" name="myFiles" multiple required>
                 </label>
          </div>
          <div style="margin-bottom: 20px;"></br></div>
