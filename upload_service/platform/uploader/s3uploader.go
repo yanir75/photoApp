@@ -5,54 +5,22 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gin-gonic/gin"
-	"github.com/go-yaml/yaml"
 )
 
-type Config struct {
-	Region     string `yaml:"Region"`
-	BucketName string `yaml:"BucketName"`
-	Profile    string `yaml:"Profile"`
-}
 
-func processError(err error) {
-	fmt.Println(err)
-	os.Exit(2)
-}
-
-var conf Config
-
-func init() {
-	f, err := os.ReadFile("go_config.yaml")
-	if err != nil {
-		processError(err)
-	}
-	err = yaml.Unmarshal(f, &conf)
-	if err != nil {
-		processError(err)
-	}
-	fmt.Println("Loaded successfully")
-
-}
 
 func uploadFileToS3(fileName string, fileContent []byte, description string) (string, error) {
-	sess, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{Region: aws.String(conf.Region),
+	sess,err := getSession()
 
-			CredentialsChainVerboseErrors: aws.Bool(true)},
-		SharedConfigState: session.SharedConfigEnable,
-
-		Profile: conf.Profile,
-	})
 	if err != nil {
 		fmt.Println("Error creating session:", err)
 		return "", err
 	}
+	
 	svc := s3.New(sess)
 
 	bucket := conf.BucketName
