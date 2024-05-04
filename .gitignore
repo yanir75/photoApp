@@ -1,4 +1,4 @@
-*.env*
+*.env
 # General
 .DS_Store
 .AppleDouble
