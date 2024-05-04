@@ -9,7 +9,7 @@ import (
 
 	"update_service/platform/authenticator"
 	"update_service/platform/middleware"
-	"update_service/platform/uploader"
+	"update_service/platform/s3operator"
 	"update_service/web/app/callback"
 	"update_service/web/app/home"
 	"update_service/web/app/login"
@@ -40,7 +40,7 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/logout", logout.Handler)
 	router.GET("/gallery", gallery.Handler)
 	router.GET("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsChecker, upload.Handler)
-	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsChecker, uploader.Handler)
+	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsChecker, s3operator.Handler)
 
 	// router.POST("/upload",uploader.uploadFile)
 
