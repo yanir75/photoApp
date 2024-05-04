@@ -72,10 +72,11 @@ func uploadFileToS3(fileName string, fileContent []byte, description string) (st
 	return "Uploaded successfully", nil
 }
 
-func uploadFile(w http.ResponseWriter, r *http.Request) {
+func uploadFile(ctx *gin.Context) {
 	fmt.Println("File Upload Endpoint Hit")
 	var errors = false
-
+	r := ctx.Request
+	w := ctx.Writer
 	// Parse our multipart form, 10 << 20 specifies a maximum
 	// upload of 10 MB files.
 	r.ParseMultipartForm(100 << 20)
@@ -125,10 +126,10 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	// write this byte array to our temporary file
 	// return that we have successfully uploaded our file!
 	if !errors {
-		fmt.Fprint(w, msg)
+		ctx.Redirect(http.StatusSeeOther,"/upload?msg="+msg)
 	}
 }
 
 func Handler(ctx *gin.Context) {
-	uploadFile(ctx.Writer, ctx.Request)
+	uploadFile(ctx)
 }
