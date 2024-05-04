@@ -9,5 +9,5 @@ import (
 // IsAuthenticated is a middleware that checks if
 // the user has already been authenticated previously.
 func IsAuthenticated(ctx *gin.Context) (bool) {
-	return sessions.Default(ctx).Get("profile")==nil 
+	return sessions.Default(ctx).Get("profile")!=nil 
 }

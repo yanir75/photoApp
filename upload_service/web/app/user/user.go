@@ -2,6 +2,8 @@ package user
 
 import (
 	"net/http"
+	// "reflect"
+	"os"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,6 +13,13 @@ import (
 func Handler(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	profile := session.Get("profile")
-
+	m, ok := profile.(map[string]interface{})
+	if ok {
+		m["permissions"] = m[os.Getenv("URL")]
+	}
+	// for k, v := range m {
+	// 	fmt.Println(k, "=>", v)
+	// }
+	// ctx.String(200,reflect.ValueOf(profile).String())
 	ctx.HTML(http.StatusOK, "user.html", profile)
 }

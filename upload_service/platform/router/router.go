@@ -38,8 +38,8 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/user", middleware.AuthenticatedRedirect, user.Handler)
 	router.GET("/logout", logout.Handler)
-	router.GET("/upload",middleware.AuthenticatedRedirect, upload.Handler)
-	router.POST("/upload",middleware.AuthenticatedRedirect, uploader.Handler)
+	router.GET("/upload",middleware.AuthenticatedRedirect,middleware.PermissionsChecker, upload.Handler)
+	router.POST("/upload",middleware.AuthenticatedRedirect,middleware.PermissionsChecker, uploader.Handler)
 
 	// router.POST("/upload",uploader.uploadFile)
 
