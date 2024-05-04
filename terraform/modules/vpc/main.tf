@@ -29,11 +29,6 @@ resource "aws_internet_gateway" "gw" {
 resource "aws_route_table" "rt" {
   vpc_id = aws_vpc.main.id
 
-  # since this is exactly the route AWS will create, the route will be adopted
-  route {
-    cidr_block = var.cidr
-    gateway_id = "local"
-  }
     tags = {
     Name = "${var.vpc_name} RT"
   }
