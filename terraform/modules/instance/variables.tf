@@ -14,6 +14,12 @@ variable "image_filters" {
     } ]
 }
 
+variable "ami_id" {
+  description = "Which ami to use if null we will use ubuntu"
+  type = string
+  default = null
+}
+
 variable "owners" {
   description = "The owner of the AMI"
   type = list(string)
@@ -73,8 +79,7 @@ variable "volume_type" {
     default = "gp3"
 }
   
-}
-  
-}
-  
+variable "subnet_id" {
+    description = "Subnet ID inside the VPC you would like to deploy your instance"
+    type = string
 }

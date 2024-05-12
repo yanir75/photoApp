@@ -1,4 +1,5 @@
 data "aws_ami" "ubuntu" {
+  count = var.ami_id == null ? 1 : 0
   most_recent = true
 
 dynamic "filter" {
@@ -13,9 +14,11 @@ dynamic "filter" {
 }
 
 resource "aws_instance" "instance" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = var.ami_id == null ? data.aws_ami.ubuntu[0].id : var.ami_id
   instance_type = var.instace_type
   associate_public_ip_address = var.associate_public_ip_address
+    subnet_id     = var.subnet_id
+
   root_block_device {
     delete_on_termination = var.delete_on_termination
     encrypted = var.encrypted
@@ -33,10 +36,13 @@ resource "aws_instance" "instance" {
   }
   
   lifecycle {
-    # The AMI ID must refer to an existing AMI that has the tag "nomad-server".
     postcondition {
       condition     =  contains(["io1", "io2", "gp3"], var.volume_type) || var.iops == null
       error_message = "IOPs can't be defined with volume type ${var.volume_type} volume type must be one of io1, io2, gp3."
     }
   }
 }
+
+# Security group for the instance use dynamic for ports
+
+# Role for instance with ssm installed and option to not create the role at all

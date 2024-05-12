@@ -13,3 +13,8 @@ variable "bucket_prefix" {
   description = "Prefix of the bucket"
   type = string
 }
+
+variable "instance_name" {
+  description = "Prefix of the bucket"
+  type = string
+}
