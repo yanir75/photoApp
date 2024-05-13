@@ -12,5 +12,5 @@ func Handler(ctx *gin.Context) {
 	// session := sessions.Default(ctx)
 	// profile := session.Get("profile")
 
-	ctx.HTML(http.StatusOK, "index.html", nil)
+	ctx.HTML(http.StatusOK, "upload.html", nil)
 }

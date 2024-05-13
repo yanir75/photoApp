@@ -8,7 +8,7 @@ import (
 
 )
 
-func GetS3Folders(){
+func GetS3Folders() (string){
 	sess,err := getSession()
 
 	if err != nil {
@@ -28,7 +28,7 @@ func GetS3Folders(){
 	if err != nil {
 		fmt.Println("Error listing folders:", err)
 	}
-	fmt.Println(li.CommonPrefixes[0].String())
+	return li.CommonPrefixes[0].String()
 }
 
 func UrlSigner(objectName string , timeInMinutesToSign ... int) (string){

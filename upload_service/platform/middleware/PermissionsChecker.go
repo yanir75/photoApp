@@ -42,7 +42,7 @@ func checkPermissions(profile interface{}, permissions []string) (map[string]int
 
 // IsAuthenticated is a middleware that checks if
 // the user has already been authenticated previously.
-func PermissionsChecker(ctx *gin.Context) {
+func permissionsChecker(ctx *gin.Context,permissions []string) {
 	session := sessions.Default(ctx)
 	profile := session.Get("profile")
 	// m, ok := profile.(map[string]interface{})
@@ -57,11 +57,20 @@ func PermissionsChecker(ctx *gin.Context) {
 	// 	}
 	// }
 	// info,authorized := checkPermissions(profile,["upload"])
-	if info, authorized := checkPermissions(profile, []string{"upload"}); authorized {
+	if info, authorized := checkPermissions(profile, permissions); authorized {
 		ctx.Next()
 	} else {
 		ctx.HTML(http.StatusUnauthorized, "user.html", info)
 		ctx.Abort()
 	}
 
+}
+
+func PermissionsHandler(permissions []string) gin.HandlerFunc {
+    fn := func(c *gin.Context) {
+        // Your handler code goes in here - e.g.
+        permissionsChecker(c,permissions)
+    }
+
+    return gin.HandlerFunc(fn)
 }

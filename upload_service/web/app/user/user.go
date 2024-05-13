@@ -21,5 +21,6 @@ func Handler(ctx *gin.Context) {
 	// 	fmt.Println(k, "=>", v)
 	// }
 	// ctx.String(200,reflect.ValueOf(profile).String())
+	
 	ctx.HTML(http.StatusOK, "user.html", profile)
 }

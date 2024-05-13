@@ -7,8 +7,13 @@ import (
 	"update_service/platform/s3operator"
 )
 
+
 // Handler for our home page.
 func Handler(ctx *gin.Context) {
-	s3operator.GetS3Folders()
-	ctx.String(http.StatusAccepted,"test")
+	data := map[string]interface{}{
+		"Folders": s3operator.GetS3Folders(),
+	}
+	// ctx.String(http.StatusAccepted,"test")
+	ctx.HTML(http.StatusOK, "index.html",data)
+
 }
