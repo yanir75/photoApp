@@ -7,6 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-yaml/yaml"
+	"github.com/aws/aws-sdk-go/service/s3"
+
 	
 )
 
@@ -48,4 +50,15 @@ func getSession() (*session.Session,error) {
 	})
 
 	return sess,err
+}
+
+func generateS3Session()(*s3.S3,string){
+	sess,err := getSession()
+
+	if err != nil {
+		fmt.Println("Error creating session:", err)
+		// return "", err
+	}
+
+	return s3.New(sess),conf.BucketName
 }

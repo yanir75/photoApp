@@ -3,17 +3,20 @@ package gallery
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"encoding/json"
 	"update_service/platform/s3operator"
-)
 
+	"github.com/gin-gonic/gin"
+)
 
 // Handler for our home page.
 func Handler(ctx *gin.Context) {
-	data := map[string]interface{}{
-		"Folders": s3operator.GetS3Folders(),
+
+	strBytes,err := json.Marshal(s3operator.GenerateUrlMap())
+	if err != nil {
+		// handle error
 	}
 	// ctx.String(http.StatusAccepted,"test")
-	ctx.HTML(http.StatusOK, "index.html",data)
+	ctx.HTML(http.StatusOK, "index.html",string(strBytes))
 
 }

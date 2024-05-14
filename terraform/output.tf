@@ -8,7 +8,7 @@ output "s3" {
   value = module.s3
 }
 
-output "instance" {
-  description = "Instance outputs"
-  value = module.instance
-}
+# output "instance" {
+#   description = "Instance outputs"
+#   value = module.instance
+# }
