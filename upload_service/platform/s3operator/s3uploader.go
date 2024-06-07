@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -76,7 +77,12 @@ func uploadFile(ctx *gin.Context) {
 		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 		fmt.Printf("File Size: %+v\n", handler.Size)
 		fmt.Printf("MIME Header: %+v\n", handler.Header)
-
+		types := strings.Split(handler.Header.Get("Content-Type"), "/")
+		fileType, ending := types[0],types[1]
+		key := fmt.Sprintf("%s/%s-%d.%s",country,fileName,index,ending)
+		if fileType == "image"{
+			go updateManifest(country,key)
+		}
 		// Create a temporary file within our temp-images directory that follows
 		// a particular naming pattern
 
@@ -89,12 +95,13 @@ func uploadFile(ctx *gin.Context) {
 			errors = true
 		}
 
-		message, err := uploadFileToS3(fmt.Sprintf("%s/%s-%d",country,fileName,index), fileBytes, description)
+		message, err := uploadFileToS3(key, fileBytes, description)
 		if err != nil {
 			fmt.Fprint(w, err.Error())
 			msg += fmt.Sprintf("File number %d: was not %s \\n", index, message)
 		} else {
 			msg += fmt.Sprintf("File number %d: was %s \\n", index, message)
+			upload = true
 		}
 	}
 	// write this byte array to our temporary file

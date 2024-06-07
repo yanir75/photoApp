@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="/public/css/style.css">
 
+
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 myParam = urlParams.get('msg');
@@ -20,11 +21,11 @@ if (myParam !== null){
    <script src="/public/js/script.js"></script>
 
 <!-- partial:index.partial.html -->
-<div class="container">
+<div class="container" id="previewContainer">
       <div class="text">
          Upload Photo
       </div>
-      <form action="upload" method="post" enctype="multipart/form-data">
+      <form action="upload" method="post" id="upload_form" enctype="multipart/form-data">
          <div class="form-row">
             <div class="input-data">
                <input type="text" name="fileName" required>
@@ -286,13 +287,13 @@ if (myParam !== null){
             </div>
          </div>
          <div style="margin-bottom: 20px;"></br></div>
-         <div class="form-row">
+         <div class="form-row" id="divFiles">
                <label for="images" class="drop-container" id="dropcontainer">
                   <span class="drop-title">Drop files here</span>
                   or
                   <input type="file" id="images" name="myFiles" multiple required>
                 </label>
-         </div>
+         </div>         
          <div style="margin-bottom: 20px;"></br></div>
          <div class="form-row">
          <div class="input-data textarea">
@@ -301,7 +302,7 @@ if (myParam !== null){
             <div class="underline"></div>
             <label for="">Write your message</label>
             <br />
-            <div class="form-row submit-btn" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+            <div class="form-row submit-btn" id="btnUpload" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
                <div class="input-data">
                   <div class="inner"></div>
                   <input type="submit" value="submit">
@@ -316,6 +317,7 @@ if (myParam !== null){
                </div>
             </a>
       </form>
+      
       </div>
    </div>
    

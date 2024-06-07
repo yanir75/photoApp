@@ -1,23 +1,36 @@
 import "./App.css";
-
+import ResponsiveAppBar from "./menu";
+// import lightGallery from "lightgallery";
 
 function App() {
   const doc = document.getElementById("content");
   let parsed = null;
   if (doc) {
     let val = doc.getAttribute("vals");
+    // console.log(val)
     if (val) {
       parsed = JSON.parse(val);
-      console.log(parsed)
+      // console.log(parsed)
     }
-  }
-  let folders = parsed["folders"]
+  }     
 
-  return (
-    <>
-      {folders ? folders.map((item: {"Prefix" : string})=> <h1>{item["Prefix"].substring(0,item["Prefix"].length-1)}</h1>): null}
-    </>
-  );
+  
+    return (
+      <>
+      <ResponsiveAppBar/>
+      <div className="wrapper">
+        {parsed ? Object.keys(parsed).map((item: any)=> 
+        <div className="container">
+        <img src={parsed[item]} title={item}/>
+        <div className="centered">{item}</div>      
+      </div>
+      ): null}
+        
+        </div>
+        </>
+    )
 }
+
+
 
 export default App;

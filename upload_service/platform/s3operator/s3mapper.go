@@ -2,14 +2,13 @@ package s3operator
 
 import (
 	"fmt"
-
+	"io"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	
 )
-var t time.Time = time.Now().Add(- time.Minute * 15)
-var objectFolderMap map[string]string = make(map[string]string)
 
 func urlSigner(objectName string , timeInMinutesToSign ... int) (string){
 	timeInMinutes := 15
@@ -28,8 +27,10 @@ func urlSigner(objectName string , timeInMinutesToSign ... int) (string){
     if err != nil {
         fmt.Println("Failed to sign request", err)
     }
+	// fmt.Println(urlStr)
     return urlStr
 }
+
 
 func listObjects(delimeter string, prefix string,maxKeys int64)(*s3.ListObjectsV2Output){
 	svc,bucket := generateS3Session()
@@ -46,35 +47,59 @@ func listObjects(delimeter string, prefix string,maxKeys int64)(*s3.ListObjectsV
 	return li
 }
 
-func getS3Folders() ([]*s3.CommonPrefix){
-	li := listObjects("/","",1000)
-
-	return li.CommonPrefixes
-}
-
-func mapItemsToFolder()(map[string]string) {
-
-
-	objectFolderMap = make(map[string]string)
-
-	for _,folder:= range getS3Folders() {
-		li := listObjects("",*folder.Prefix,1)
-		objectFolderMap[(*folder.Prefix)[:len(*folder.Prefix)-1]] = *li.Contents[0].Key
+func GetObject(objectName string) ([]byte){
+	svc,bucket := generateS3Session()
+	res,err := svc.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key: aws.String(s3ManifestKey),
+	})
+	if err != nil {
+		fmt.Println("Error getting object:", err)
 	}
 	
-	return objectFolderMap
+	defer res.Body.Close()
+	fileBytes, err := io.ReadAll(res.Body)
+    if err != nil {
+        fmt.Println("Couldn't read s3 file:",err)
+    }
+	if err != nil {
+		fmt.Println("Couldn't close s3 bodyfile", err)
+	}
+	return fileBytes
+
 }
 
+// func getS3Folders() ([]*s3.CommonPrefix){
+// 	li := listObjects("/","",1000)
+
+// 	return li.CommonPrefixes
+// }
+
+// func mapItemsToFolder()(map[string]string) {
+
+
+// 	objectFolderMap = make(map[string]string)
+
+// 	for _,folder:= range getS3Folders() {
+// 		li := listObjects("",*folder.Prefix,1)
+// 		objectFolderMap[(*folder.Prefix)[:len(*folder.Prefix)-1]] = *li.Contents[0].Key
+// 	}
+	
+// 	return objectFolderMap
+// }
+
 func GenerateUrlMap()(map[string]string){
-	if (time.Since(t).Minutes() > 10){
+	if (time.Since(t).Minutes() > 10 || upload){
 		t = time.Now()
-		objectFolderMap = mapItemsToFolder()
-		for key,value := range objectFolderMap {
-			objectFolderMap[key] = urlSigner(value,15)
+		// objectFolderMap = mapItemsToFolder()
+		for key,value := range manifest {
+			url := urlSigner(value,15)
+			objectFolderMap[key] = url
 		}
 	// fmt.Println(time.Since(t).Minutes())
-		
+		// fmt.Println(objectFolderMap)
 	}
+	upload = false
 	return objectFolderMap
 }
 
