@@ -1,5 +1,5 @@
 import "./App.css";
-import ResponsiveAppBar from "./menu";
+import ResponsiveAppBar from "./components/menu";
 // import lightGallery from "lightgallery";
 
 function App() {

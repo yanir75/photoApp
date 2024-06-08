@@ -46,7 +46,7 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/callback", callback.Handler(auth))
 	router.GET("/user", middleware.AuthenticatedRedirect, user.Handler)
 	router.GET("/logout", logout.Handler)
-	router.GET("/gallery", gallery.Handler)
+	router.GET("/gallery", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"gallery"}),gallery.Handler)
 	router.GET("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), upload.Handler)
 	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), s3operator.Handler)
 
