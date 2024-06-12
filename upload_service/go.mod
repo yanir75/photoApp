@@ -5,12 +5,13 @@ go 1.21
 toolchain go1.22.2
 
 require (
-	github.com/aws/aws-sdk-go v1.52.1
+	github.com/aws/aws-sdk-go v1.53.19
 	github.com/coreos/go-oidc/v3 v3.10.0
 	github.com/gin-contrib/sessions v1.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/joho/godotenv v1.5.1
+	gocv.io/x/gocv v0.37.0
 	golang.org/x/oauth2 v0.19.0
 )
 

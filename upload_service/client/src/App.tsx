@@ -1,34 +1,21 @@
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import ResponsiveAppBar from "./components/menu";
+import Gallery from "./components/gallery";
+import GalleryHome from "./components/galleryHome";
+import User from "./components/user";
 // import lightGallery from "lightgallery";
 
 function App() {
-  const doc = document.getElementById("content");
-  let parsed = null;
-  if (doc) {
-    let val = doc.getAttribute("vals");
-    // console.log(val)
-    if (val) {
-      parsed = JSON.parse(val);
-      // console.log(parsed)
-    }
-  }     
+  return (
+    <>
+       <Routes>
+          <Route path="/gallery" element={<GalleryHome />} />
+          <Route path="/country/:country" element={<Gallery />} />
+          <Route path="/user" element={<User/>} />
+       </Routes>
+    </>
+ );
 
-  
-    return (
-      <>
-      <ResponsiveAppBar/>
-      <div className="wrapper">
-        {parsed ? Object.keys(parsed).map((item: any)=> 
-        <div className="container">
-        <img src={parsed[item]} title={item}/>
-        <div className="centered">{item}</div>      
-      </div>
-      ): null}
-        
-        </div>
-        </>
-    )
 }
 
 

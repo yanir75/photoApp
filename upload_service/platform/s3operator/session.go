@@ -12,18 +12,33 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-
 type Config struct {
 	Region     string `yaml:"Region"`
 	BucketName string `yaml:"BucketName"`
 	Profile    string `yaml:"Profile"`
 }
 
-var t time.Time = time.Now().Add(- time.Minute * 15)
+type ObjectMetaData struct {
+	Type         string
+	Name         string
+	Description  string
+	ThumbnailUrl string
+}
+
+type Country struct {
+	FirstImage string
+	MetaData   []ObjectMetaData
+}
+
+var t time.Time = time.Now().Add(-time.Minute * 15)
+var countryUrlTime map[string]time.Time = make(map[string]time.Time)
+
 var objectFolderMap map[string]string = make(map[string]string)
-var manifest map[string]string = make(map[string]string)
+var manifest map[string]*Country = make(map[string]*Country)
+var countryUrlMap map[string][]ObjectMetaData = make(map[string][]ObjectMetaData)
+
 var manifestDescription = "Manifest json of the countries and their first image key"
-var s3ManifestKey string= "manifest.json"
+var s3ManifestKey string = "manifest.json"
 var upload bool = true
 
 func processError(err error) {
@@ -34,31 +49,44 @@ func processError(err error) {
 var conf Config
 
 func createManifest() {
-	res := listObjects("",s3ManifestKey,1)	
+	res := listObjects("", s3ManifestKey, 1)
 	if len(res.Contents) == 0 {
 		fmt.Println("Created manifest since it did not exist")
-		uploadFileToS3(s3ManifestKey,[]byte("{}"),manifestDescription)
+		uploadFileToS3(s3ManifestKey, []byte("{}"), manifestDescription)
 	}
 }
 
-func loadManifest(){
+func loadManifest() {
 	// fmt.Printf("test: %s\n",string(GetObject(s3ManifestKey)))
-	err := json.Unmarshal(GetObject(s3ManifestKey),&manifest)
+	err := json.Unmarshal(GetObject(s3ManifestKey), &manifest)
+	for key := range manifest {
+		countryUrlTime[key] = time.Now().Add(-time.Minute * 15)
+		countryUrlMap[key] = []ObjectMetaData{}
+	}
 	if err != nil {
-		fmt.Println("Coudln't load manifest: ",err)
+		fmt.Println("Coudln't load manifest: ", err)
 	}
 	// fmt.Println(manifest)
 }
 
-func updateManifest(country string,pictureName string){
-	if _,ok := manifest[country]; !ok {
-		manifest[country] = pictureName
-		mapJson,err := json.Marshal(manifest)
-		if err != nil {
-			fmt.Println("Couldn't marshal manifest: ",err)
-		}
-		uploadFileToS3(s3ManifestKey,mapJson,manifestDescription)
+func updateManifest(country string, fileName string, fileType string, description string) {
+	if _, ok := manifest[country]; !ok {
+		manifest[country] = &Country{"", []ObjectMetaData{}}
 	}
+	if fileType != "image" {
+		manifest[country].FirstImage = fileName + ".jpeg"
+	} else {
+		manifest[country].FirstImage = fileName
+	}
+	manifest[country].MetaData = append(manifest[country].MetaData, ObjectMetaData{fileType, fileName, description, ""})
+	countryUrlTime[country] = time.Now().Add(-time.Minute * 15)
+
+	mapJson, err := json.Marshal(manifest)
+	if err != nil {
+		fmt.Println("Couldn't marshal manifest: ", err)
+	}
+	uploadFileToS3(s3ManifestKey, mapJson, manifestDescription)
+
 }
 
 func init() {
@@ -75,7 +103,7 @@ func init() {
 	loadManifest()
 }
 
-func getSession() (*session.Session,error) {
+func getSession() (*session.Session, error) {
 	sess, err := session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{Region: aws.String(conf.Region),
 
@@ -85,16 +113,16 @@ func getSession() (*session.Session,error) {
 		Profile: conf.Profile,
 	})
 
-	return sess,err
+	return sess, err
 }
 
-func generateS3Session()(*s3.S3,string){
-	sess,err := getSession()
+func generateS3Session() (*s3.S3, string) {
+	sess, err := getSession()
 
 	if err != nil {
 		fmt.Println("Error creating session:", err)
 		// return "", err
 	}
 
-	return s3.New(sess),conf.BucketName
+	return s3.New(sess), conf.BucketName
 }

@@ -11,6 +11,8 @@ import (
 	"update_service/platform/authenticator"
 	"update_service/platform/middleware"
 	"update_service/platform/s3operator"
+	"update_service/platform/api"
+	
 	"update_service/web/app/callback"
 	"update_service/web/app/gallery"
 	"update_service/web/app/home"
@@ -47,6 +49,8 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/user", middleware.AuthenticatedRedirect, user.Handler)
 	router.GET("/logout", logout.Handler)
 	router.GET("/gallery", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"gallery"}),gallery.Handler)
+	router.GET("/country/:country", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"country","gallery"}),gallery.Handler)
+	router.GET("/api/:country",middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"country"}),api.CountryHandler)
 	router.GET("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), upload.Handler)
 	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), s3operator.Handler)
 

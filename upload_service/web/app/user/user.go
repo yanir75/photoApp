@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"net/http"
 	// "reflect"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 // Handler for our logged-in user page.
 func Handler(ctx *gin.Context) {
+	
 	session := sessions.Default(ctx)
 	profile := session.Get("profile")
 	m, ok := profile.(map[string]interface{})
@@ -21,6 +23,6 @@ func Handler(ctx *gin.Context) {
 	// 	fmt.Println(k, "=>", v)
 	// }
 	// ctx.String(200,reflect.ValueOf(profile).String())
-	
-	ctx.HTML(http.StatusOK, "user.html", profile)
+	j,_ := json.Marshal(profile)
+	ctx.HTML(http.StatusOK, "index.html", string(j))
 }

@@ -3,16 +3,56 @@ package s3operator
 import (
 	"bytes"
 	"fmt"
+	"image/jpeg"
+
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/gin-gonic/gin"
+	"gocv.io/x/gocv"
 )
 
 
+func createThumbnail(videoBytes []byte,fileName string) ([]byte) {
+    // Path to your video file
+    tmpFile, err := os.CreateTemp("", fileName)
+    if err != nil {
+        fmt.Println("Error creating temp file:", err)
+    }
+    defer os.Remove(tmpFile.Name())
+    defer tmpFile.Close()
+
+    if _, err := tmpFile.Write(videoBytes); err != nil {
+        fmt.Println("Error writing to temp file:", err)
+    }
+
+    vc, err := gocv.VideoCaptureFile(tmpFile.Name())
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+
+    defer vc.Close()
+	fmt.Println("Read file")
+
+    // Read first frame
+    frame := gocv.NewMat()
+    defer frame.Close()
+
+    if ok := vc.Read(&frame); !ok {
+        fmt.Println("Error: cannot read video file")
+    }
+
+    // Save the first frame as an image
+    img,_ := frame.ToImage()
+	buf := new(bytes.Buffer)
+	jpeg.Encode(buf, img, nil)
+	return buf.Bytes()
+
+}
 
 func uploadFileToS3(fileName string, fileContent []byte, description string) (string, error) {
 	sess,err := getSession()
@@ -80,9 +120,8 @@ func uploadFile(ctx *gin.Context) {
 		types := strings.Split(handler.Header.Get("Content-Type"), "/")
 		fileType, ending := types[0],types[1]
 		key := fmt.Sprintf("%s/%s-%d.%s",country,fileName,index,ending)
-		if fileType == "image"{
-			go updateManifest(country,key)
-		}
+		// if fileType == "image"{
+		// }
 		// Create a temporary file within our temp-images directory that follows
 		// a particular naming pattern
 
@@ -94,7 +133,10 @@ func uploadFile(ctx *gin.Context) {
 			fmt.Fprint(w, err.Error())
 			errors = true
 		}
-
+		if fileType != "image"{
+			thumbnail := createThumbnail(fileBytes,fileName)
+			uploadFileToS3(key+".jpeg",thumbnail,"Thumbnail: "+ description)
+		}
 		message, err := uploadFileToS3(key, fileBytes, description)
 		if err != nil {
 			fmt.Fprint(w, err.Error())
@@ -102,6 +144,7 @@ func uploadFile(ctx *gin.Context) {
 		} else {
 			msg += fmt.Sprintf("File number %d: was %s \\n", index, message)
 			upload = true
+			go updateManifest(country,key,fileType,description)
 		}
 	}
 	// write this byte array to our temporary file

@@ -1,6 +1,6 @@
 import ResponsiveAppBar from "./menu";
-
-function galleryHome() {
+import { useNavigate } from "react-router-dom";
+function GalleryHome() {
     const doc = document.getElementById("content");
     let parsed = null;
     if (doc) {
@@ -11,14 +11,18 @@ function galleryHome() {
         // console.log(parsed)
       }
     }     
-  
-    
+    const navigate = useNavigate()
+    function goPage(page:string,keys:string[]){
+        navigate("/country/".concat(page),{state: {keys: keys}})
+    }
+    const parsedKeys = Object.keys(parsed)
+
       return (
         <>
-        <ResponsiveAppBar/>
+        <ResponsiveAppBar countries={parsedKeys}/>
         <div className="wrapper">
-          {parsed ? Object.keys(parsed).map((item: any)=> 
-          <div className="container">
+          {parsed ? parsedKeys.map((item: string)=> 
+          <div className="container" onClick={()=> goPage(item,parsedKeys)}>
           <img src={parsed[item]} title={item}/>
           <div className="centered">{item}</div>      
         </div>
@@ -29,4 +33,4 @@ function galleryHome() {
       )
   }
 
-  export default galleryHome;
+  export default GalleryHome;

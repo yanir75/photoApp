@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,45 +9,104 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useNavigate} from "react-router-dom";
+
+import {  useNavigate} from "react-router-dom";
+import { useState } from 'react';
 
 
 const pages = ['Upload', 'Logout'];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({countries} :{countries:string[]}) {
 
     let navigate = useNavigate();
 
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    function navigation(item : any){
+      // console.log(item)
+      if (item === "/logout"){
+        navigate('/user')
+      }
+      else {
+        navigate(item,{state: {keys: countries}})
+      }
+    }
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    navigate(`/`+event.currentTarget.id.toLowerCase());
-    navigate(0)
+    navigation(`/`+event.currentTarget.id.toLowerCase());
+    navigation(0)
 
     setAnchorElNav(event.currentTarget)
   };
 
 
   const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    navigate(`/`+event.currentTarget.id.toLowerCase());
-    navigate(0)
+    navigation(`/`+event.currentTarget.id.toLowerCase());
+    navigation(0)
 
     setAnchorElNav(null)
   };
-
  
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    if (anchorEl === null){
+    setAnchorEl(event.currentTarget);
+    }
+    else{
+      setAnchorEl(null);
+
+    }
+  };
+
+  const handleClose = (event: React.MouseEvent<HTMLElement>) => {
+    // console.log(event.currentTarget.id)
+    if (event.currentTarget.id){
+      navigation("/country/".concat(event.currentTarget.id))
+    }
+    setAnchorEl(null);
+  };
 
   return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+        <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={handleMenu}
+
+          >
+            <MenuIcon/>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {countries ? countries.map((country: string)=> <MenuItem id={country} onClick={handleClose}>{country}</MenuItem>) : null}
+                {/* <MenuItem  onClick={handleClose}>Profile</MenuItem> */}
+                {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
+              </Menu>
+
+          </IconButton>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            // href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
