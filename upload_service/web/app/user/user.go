@@ -1,8 +1,11 @@
 package user
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
+	"update_service/platform/s3operator"
+
 	// "reflect"
 	"os"
 
@@ -19,10 +22,21 @@ func Handler(ctx *gin.Context) {
 	if ok {
 		m["permissions"] = m[os.Getenv("URL")]
 	}
+	buf := new(bytes.Buffer)
+
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+	for key,value:= range s3operator.GenerateUrlMap() {
+		m["country:"+key] = value
+	}
+	err := enc.Encode(m)
+	if err !=nil {
+
+	}
 	// for k, v := range m {
 	// 	fmt.Println(k, "=>", v)
 	// }
 	// ctx.String(200,reflect.ValueOf(profile).String())
-	j,_ := json.Marshal(profile)
-	ctx.HTML(http.StatusOK, "index.html", string(j))
+	
+	ctx.HTML(http.StatusOK, "index.html", buf.String())
 }

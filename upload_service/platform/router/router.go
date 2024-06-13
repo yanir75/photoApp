@@ -32,15 +32,15 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 
 	store := cookie.NewStore([]byte("secret"))
 	router.Use(sessions.Sessions("auth-session", store))
-	router.Static("/gallery", "client/dist")
+	router.Static("/public", "client/dist")
 
-	router.Static("/public", "web/static")
+	// router.Static("/public", "public/static")
 
 	
 	// router.Handle("/test","hello-world/build")
 		// router.Use(static.Serve("/test",static.LocalFile("hello-world/build",true)))
 	// router.LoadHTMLGlob("web/template/*")
-	router.LoadHTMLFiles("client/dist/index.html","web/template/user.html","web/template/upload.html")
+	router.LoadHTMLFiles("client/dist/index.html",)
 
 
 	router.GET("/", middleware.HomePageDecider, home.Handler)

@@ -54,7 +54,7 @@ img:hover {
 }
 
 /* Container holding the image and the text */
-.container {
+.upcont {
   display: inline-block;
   position: relative;
   text-align: center;

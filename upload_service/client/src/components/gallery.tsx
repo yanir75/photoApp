@@ -19,7 +19,7 @@ import  { useCallback, useEffect, useRef, useState } from 'react';
 
 function Gallery() {
     const [images, setImages] = useState([]); // Array instead of object
-
+    const [bar,setBar] = useState(true)
 async function initPhotos(country:string) {
     await fetch('/api/'.concat(country))
         .then(response => response.json())
@@ -37,7 +37,6 @@ if(country){
     useEffect(()=>{initPhotos(country)},[])
     
 }
-
   const lightGallery = useRef<any>(null);
 
   const items = images.map(({Description,Type,Name,ThumbnailUrl},index)=> {
@@ -72,8 +71,15 @@ if(country){
           } as any)
     }
   })
-  const openGallery = useCallback(() => {
+  const openGallery = useCallback(async () => {
+    setBar(false)
+    const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+
+    await sleep(100)
+
+
     lightGallery.current.openGallery();
+
   }, []);
 
   const onInit = useCallback((detail: any) => {
@@ -81,13 +87,17 @@ if(country){
       lightGallery.current = detail.instance;
     }
   }, []);
+  const afterClose = useCallback(async () => {
+    setBar(true)
 
+
+  }, []);
   // Add new slides
 
   return (
     
     <div className="App">
-                <ResponsiveAppBar
+                <ResponsiveAppBar visble={bar}
         countries={keys}/>
         {images.map(({ThumbnailUrl})=>  <img src={ThumbnailUrl} title={ThumbnailUrl} onClick={openGallery}/>) }
       {/* <button onClick={openGallery}>Open Gallery</button> */}
@@ -98,6 +108,7 @@ if(country){
         animateThumb
         dynamicEl={items}
         onInit={onInit}
+        onAfterClose={afterClose}
         plugins={[lgZoom,lgThumbnail, lgVideo]}
       ></LightGallery>
     </div>

@@ -14,10 +14,12 @@ import {  useNavigate} from "react-router-dom";
 import { useState } from 'react';
 
 
-const pages = ['Upload', 'Logout'];
+const pages = ['Upload', 'Logout',"Gallery"];
 
-function ResponsiveAppBar({countries} :{countries:string[]}) {
-
+function ResponsiveAppBar(props:any) {
+    if(props.visble !== false){
+      props.visble = true
+    }
     let navigate = useNavigate();
 
     function navigation(item : any){
@@ -26,7 +28,7 @@ function ResponsiveAppBar({countries} :{countries:string[]}) {
         navigate('/user')
       }
       else {
-        navigate(item,{state: {keys: countries}})
+        navigate(item,{state: {keys: props.countries}})
       }
     }
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -67,6 +69,7 @@ function ResponsiveAppBar({countries} :{countries:string[]}) {
   };
 
   return (
+    <div style={{display: props.visble == true ? "inline" : "none"}}>
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -95,7 +98,7 @@ function ResponsiveAppBar({countries} :{countries:string[]}) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                {countries ? countries.map((country: string)=> <MenuItem id={country} onClick={handleClose}>{country}</MenuItem>) : null}
+                {props.countries ? props.countries.map((country: string)=> <MenuItem id={country} onClick={handleClose}>{country}</MenuItem>) : null}
                 {/* <MenuItem  onClick={handleClose}>Profile</MenuItem> */}
                 {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
               </Menu>
@@ -191,6 +194,7 @@ function ResponsiveAppBar({countries} :{countries:string[]}) {
         </Toolbar>
       </Container>
     </AppBar>
+    </div>
   );
 }
 export default ResponsiveAppBar;

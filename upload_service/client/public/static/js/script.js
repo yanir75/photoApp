@@ -19,3 +19,9 @@ dropContainer?.addEventListener("drop", (e) => {
   dropContainer.classList.remove("drag-active")
   fileInput.files = e.dataTransfer.files
 })
+
+const urlParams = new URLSearchParams(window.location.search);
+myParam = urlParams.get('msg');
+if (myParam !== null){
+   alert(myParam.replace(/\\n/g,"\n"));
+}
