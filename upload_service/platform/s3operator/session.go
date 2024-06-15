@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,11 +31,16 @@ type Country struct {
 	MetaData   []ObjectMetaData
 }
 
+type SafeManifest struct {
+	mu sync.Mutex
+	countryMap  map[string]*Country
+}
+
 var t time.Time = time.Now().Add(-time.Minute * 15)
 var countryUrlTime map[string]time.Time = make(map[string]time.Time)
 
 var objectFolderMap map[string]string = make(map[string]string)
-var manifest map[string]*Country = make(map[string]*Country)
+var manifest SafeManifest = SafeManifest{countryMap:make(map[string]*Country)}
 var countryUrlMap map[string][]ObjectMetaData = make(map[string][]ObjectMetaData)
 
 var manifestDescription = "Manifest json of the countries and their first image key"
@@ -52,14 +58,14 @@ func createManifest() {
 	res := listObjects("", s3ManifestKey, 1)
 	if len(res.Contents) == 0 {
 		fmt.Println("Created manifest since it did not exist")
-		uploadFileToS3(s3ManifestKey, []byte("{}"), manifestDescription)
+		uploadFileToS3(s3ManifestKey, []byte("{}"), manifestDescription,false)
 	}
 }
 
 func loadManifest() {
 	// fmt.Printf("test: %s\n",string(GetObject(s3ManifestKey)))
-	err := json.Unmarshal(GetObject(s3ManifestKey), &manifest)
-	for key := range manifest {
+	err := json.Unmarshal(GetObject(s3ManifestKey), &manifest.countryMap)
+	for key := range manifest.countryMap {
 		countryUrlTime[key] = time.Now().Add(-time.Minute * 15)
 		countryUrlMap[key] = []ObjectMetaData{}
 	}
@@ -70,22 +76,24 @@ func loadManifest() {
 }
 
 func updateManifest(country string, fileName string, fileType string, description string) {
-	if _, ok := manifest[country]; !ok {
-		manifest[country] = &Country{"", []ObjectMetaData{}}
+	manifest.mu.Lock()
+	if _, ok := manifest.countryMap[country]; !ok {
+		manifest.countryMap[country] = &Country{"", []ObjectMetaData{}}
 	}
 	if fileType != "image" {
-		manifest[country].FirstImage = fileName + ".jpeg"
+		manifest.countryMap[country].FirstImage = fileName + ".jpeg"
 	} else {
-		manifest[country].FirstImage = fileName
+		manifest.countryMap[country].FirstImage = fileName
 	}
-	manifest[country].MetaData = append(manifest[country].MetaData, ObjectMetaData{fileType, fileName, description, ""})
+	manifest.countryMap[country].MetaData = append(manifest.countryMap[country].MetaData, ObjectMetaData{fileType, fileName, description, ""})
 	countryUrlTime[country] = time.Now().Add(-time.Minute * 15)
 
-	mapJson, err := json.Marshal(manifest)
+	mapJson, err := json.Marshal(manifest.countryMap)
 	if err != nil {
 		fmt.Println("Couldn't marshal manifest: ", err)
 	}
-	uploadFileToS3(s3ManifestKey, mapJson, manifestDescription)
+	uploadFileToS3(s3ManifestKey, mapJson, manifestDescription,false)
+	manifest.mu.Unlock()
 
 }
 

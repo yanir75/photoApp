@@ -89,7 +89,7 @@ func GenerateUrlMap() map[string]string {
 	if time.Since(t).Minutes() > 10 || upload {
 		t = time.Now()
 		// objectFolderMap = mapItemsToFolder()
-		for key, value := range manifest {
+		for key, value := range manifest.countryMap {
 
 			url := urlSigner(value.FirstImage, 15)
 			objectFolderMap[key] = url
@@ -106,7 +106,7 @@ func GenerateUrlCountryMap(country string) map[string][]ObjectMetaData {
 		countryUrlMap[country] = []ObjectMetaData{}
 		countryUrlTime[country] = time.Now()
 		// objectFolderMap = mapItemsToFolder()
-		for _, value := range manifest[country].MetaData {
+		for _, value := range manifest.countryMap[country].MetaData {
 			url := urlSigner(value.Name, 15)
 			thumbnailUrl := url
 			if value.Type != "image" {

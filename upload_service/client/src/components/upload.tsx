@@ -3,8 +3,11 @@ import {useCountries, useScript} from "./useScript";
 
 // Usage inside a component
 function Upload(){
-	  useScript('/public/js/script.js');
+	  useScript('/public/static/js/script.js');
+    useScript('/public/static/js/upload.js');
+
     const {parsedKeys} = useCountries()
+
     return (
 
 <>
@@ -16,7 +19,7 @@ function Upload(){
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
   />
-  <link rel="stylesheet" href="/public/css/style.css" />
+  <link rel="stylesheet" href="/public/static/css/style.css" />
   <div className="container" id="previewContainer">
     <div className="text">Upload Photo</div>
     <form
@@ -25,6 +28,10 @@ function Upload(){
       id="upload_form"
       encType="multipart/form-data"
     >
+      <div id="progress"></div>
+      <div id="progressUpload"></div>
+
+      
       <div className="form-row">
         <div className="input-data">
           <input type="text" name="fileName" required />
@@ -342,13 +349,13 @@ function Upload(){
             required
           />
         </label>
-      </div>
+      </div> 
       <div style={{ marginBottom: 20 }}>
         <br />
       </div>
       <div className="form-row">
         <div className="input-data textarea">
-          <textarea rows={8} cols={80} required defaultValue={""} />
+          <textarea rows={8} cols={80} name="description" required defaultValue={""} />
           <div className="underline"             style={{
               display: "flex",
               flexDirection: "row",

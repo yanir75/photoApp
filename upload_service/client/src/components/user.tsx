@@ -3,9 +3,10 @@ import {useCountries, useScript} from "./useScript";
 // Usage inside a component
 function User(){
 
-		useScript("https://code.jquery.com/jquery-3.1.0.min.js")
-	  useScript('/public/js/js.cookie.js',true);
-	  useScript("/public/js/user.js",true)
+		// useScript("https://code.jquery.com/jquery-3.1.0.min.js")
+    
+	  useScript('/public/static/js/js.cookie.js',true);
+	  useScript("/public/static/js/user.js",true)
 	  // const doc = document.getElementById("content");
 	  // let parsed = null;
 	  // if (doc) {
@@ -17,14 +18,20 @@ function User(){
 		// }
 	  // }  
     var {parsed} = useCountries()
-    var picture = parsed["picture"]
-    var nickname = parsed["nickname"]
-
-	 var permstring = "["
+    var picture = null
+    var nickname = null
+    var permstring:any = null
+    var parsedKeys: string[] = []
+    if(parsed){
+    picture = parsed["picture"]
+    nickname = parsed["nickname"]
+    
+	  permstring = "["
+    if(parsed["permissions"]){
 	 parsed["permissions"].map((permissions: string) => permstring += permissions+ ", ")
 	 permstring = permstring.substring(0,permstring.length-2)
 	 permstring+="]"
-   var parsedKeys: string[] = []
+    }
 
    Object.keys(parsed).map((key:string)=>{
     if (key.startsWith("country:")){
@@ -32,7 +39,7 @@ function User(){
     parsedKeys.push(key.split("country:")[1])
    }
   })
-
+    }
     return (
 <>
 <ResponsiveAppBar countries={parsedKeys} />
@@ -47,12 +54,12 @@ function User(){
     href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     rel="stylesheet"
   />
-  <link href="/public/css/app.css" rel="stylesheet" />
+  <link href="/public/static/css/app.css" rel="stylesheet" />
   <div className="container">
     <div className="login-page clearfix">
       <div className="logged-in-box auth0-box logged-in">
         <h1 id="logo">
-          <img src="/public/media/auth0_logo_final_blue_RGB.png" />
+          <img src="/public/static/media/auth0_logo_final_blue_RGB.png" />
         </h1>
         <img className="avatar" src={picture} />
         <h2 style={{color: "black"}}>
@@ -62,7 +69,7 @@ function User(){
           Your permissions are {permstring}
         </h2>
         <a
-          id="qsLogoutBtn"
+          id="logout"
           className="btn btn-primary btn-lg btn-logout btn-block"
           href="/logout"
         >

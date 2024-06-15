@@ -50,6 +50,7 @@ func New(auth *authenticator.Authenticator) *gin.Engine {
 	router.GET("/logout", logout.Handler)
 	router.GET("/gallery", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"gallery"}),gallery.Handler)
 	router.GET("/country/:country", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"country","gallery"}),gallery.Handler)
+	router.GET("/api/percentage/:filename",api.PercentageHandler)
 	router.GET("/api/:country",middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"country"}),api.CountryHandler)
 	router.GET("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), upload.Handler)
 	router.POST("/upload", middleware.AuthenticatedRedirect, middleware.PermissionsHandler([]string {"upload"}), s3operator.Handler)
